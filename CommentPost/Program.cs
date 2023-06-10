@@ -16,20 +16,20 @@ namespace CommentPost
 
             var builder = WebApplication.CreateBuilder(args);
 
-            Log.Logger = new LoggerConfiguration()
-                  .ReadFrom.Configuration(builder.Configuration)
-                  .Enrich.FromLogContext()
-                  .WriteTo.TeleSink(
-                  telegramApiKey: "telegramApiKey",
-                  telegramChatId: "telegramChatId",
-                  minimumLevel: LogEventLevel.Error)
-                  .CreateLogger();
+            //Log.Logger = new LoggerConfiguration()
+            //      .ReadFrom.Configuration(builder.Configuration)
+            //      .Enrich.FromLogContext()
+            //      .WriteTo.TeleSink(
+            //      telegramApiKey: "telegramApiKey",
+            //      telegramChatId: "telegramChatId",
+            //      minimumLevel: LogEventLevel.Error)
+            //      .CreateLogger();
 
 
             builder.Services.AddInfrastructure(builder.Configuration);
-            builder.Services.AddApplication();
+            builder.Services.AddApplication(builder.Configuration);
             builder.Services.AddCurrentUser();
-
+            builder.Services.AddRateLimiterServise();
             builder.Services.AddControllers();
 
             //builder.Services.AddStackExchangeRedisCache(options =>

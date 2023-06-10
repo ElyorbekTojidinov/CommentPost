@@ -2,6 +2,7 @@
 using Application.UseCases.Posts.Query;
 using CommentPost.Attributes;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CommentPost.Controllers;
 
@@ -19,6 +20,7 @@ public class PostController : ApiBaseController
     [HttpPut("Update")]
     public async Task<IActionResult> UpdatePost([FromForm] UpdatePostCommand command) => Ok(await _mediatr.Send(command));
 
+    
     [LazyCachePro(10, 20)]
     [HttpGet("GetAll")]
     public async Task<IActionResult> GetAllPosts() => Ok(await _mediatr.Send(new GetAllPostQuery()));

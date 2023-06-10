@@ -1,4 +1,6 @@
 ﻿using Application.Common.Exceptions;
+using Application.Common.Notification;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -8,12 +10,14 @@ public class GlobalExceptionMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionMiddleware> _logger;
-    public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
+    private readonly IMediator _mediator;
+    public GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger, IMediator mediator)
     {
         _logger = logger;
         _next = next;
+        _mediator = mediator;
     }
-          
+
 
     public async Task Invoke(HttpContext httpContext)
     {
@@ -24,10 +28,18 @@ public class GlobalExceptionMiddleware
         catch (NotFoundException ex)
         {
             await HandleException(httpContext, ex.Message, HttpStatusCode.NotFound, ex.Message);
+            await _mediator.Publish(new ExceptionNotification()
+            {
+                 ExceptionString = ex.Message
+            });
         }
         catch (Exception ex)
         {
             await HandleException(httpContext, ex.Message, HttpStatusCode.InternalServerError, ex.Message);
+            await _mediator.Publish(new ExceptionNotification()
+            {
+                ExceptionString = ex.Message
+            });
         }
 
     }
